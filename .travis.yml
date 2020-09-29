@@ -12,8 +12,9 @@ addons:
     - python-pip
 
 install:
-  # Install ansible
+  # Install ansible and ansible-lint
   - pip install ansible
+  - pip install ansible-lint
 
   # Check ansible version
   - ansible --version
@@ -23,6 +24,7 @@ install:
 
 script:
   # Basic role syntax check
+  - PYTHONIOENCODING=utf-8 ansible-lint tests/test.yml
   - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
 
 notifications:
