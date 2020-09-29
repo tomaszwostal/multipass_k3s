@@ -1,0 +1,88 @@
+---
+- name: check if k3s main node is up and running
+  command: "/snap/bin/multipass list | grep {{ item }}"
+  ignore_errors: True
+  with_sequence: start=1 end={{ k3s_main_number }} format={{ k3s_main_name }}-%02x
+  register: "k3s_main"
+  failed_when: "k3s_main.rc == 0"
+  changed_when: "k3s_main.rc == 1"
+
+- name: create virtual machine for k3s main node
+  command: "/snap/bin/multipass launch --name {{ item }} --cpus {{ k3s_main_cpu }} --mem {{ k3s_main_memory }} --disk {{ k3s_main_disk }}"
+  with_sequence: start=1 end={{ k3s_main_number }} format={{ k3s_main_name }}-%02x
+  run_once: yes
+  when: k3s_main is changed
+
+- name: get k3s main node IP address
+  shell: |
+    set -o pipefail
+    /snap/bin/multipass info {{ item }} | grep "IPv4" | awk -F' ' '{print $2}'
+  args:
+    executable: /bin/bash
+  with_sequence: start=1 end={{ k3s_main_number }} format={{ k3s_main_name }}-%02x
+  register: k3s_main_ip
+  changed_when: "k3s_main_ip.rc == 1"
+
+- name: add /etc/hosts entry for k3s main node
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ item.stdout }} {{ item.item }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items: "{{ k3s_main_ip.results }}"
+  run_once: yes
+  become: yes
+  delegate_to: localhost
+
+- name: configure k3s main node
+  shell: |
+    /snap/bin/multipass transfer ~/.ssh/id_rsa.pub "{{ item.item }}:"
+    /snap/bin/multipass exec "{{ item.item }}" -- bash -c 'sudo cat /home/ubuntu/id_rsa.pub >> /home/ubuntu/.ssh/authorized_keys'
+  register: k3s_main_configure
+  changed_when: "k3s_main_configure.rc == 1"
+  with_items: "{{ k3s_main_ip.results }}"
+
+- name: check if k3s worker nodes are up and running
+  command: "/snap/bin/multipass list | grep {{ item }}"
+  ignore_errors: True
+  with_sequence: start=1 end={{ k3s_worker_number }} format={{ k3s_worker_name }}-%02x
+  register: "k3s_worker"
+  failed_when: "k3s_worker.rc == 0"
+  changed_when: "k3s_worker.rc == 1"
+
+- name: create virtual machines for k3s worker nodes
+  command: "/snap/bin/multipass launch --name {{ item }} --cpus {{ k3s_worker_cpu }} --mem {{ k3s_worker_memory }} --disk {{ k3s_worker_disk }}"
+  with_sequence: start=1 end={{ k3s_worker_number }} format={{ k3s_worker_name }}-%02x
+  run_once: yes
+  when: k3s_worker is changed
+
+- name: get k3s worker nodes IP addresses
+  shell: |
+    set -o pipefail
+    /snap/bin/multipass info {{ item }} | grep "IPv4" | awk -F' ' '{print $2}'
+  args:
+    executable: /bin/bash
+  with_sequence: start=1 end={{ k3s_worker_number }} format={{ k3s_worker_name }}-%02x
+  register: k3s_worker_ip
+  changed_when: "k3s_worker_ip.rc == 1"
+
+- name: add /etc/hosts entries for k3s worker nodes
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ item.stdout }} {{ item.item }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items: "{{ k3s_worker_ip.results }}"
+  run_once: yes
+  become: yes
+  delegate_to: localhost
+
+- name: configure k3s worker nodes
+  shell: |
+    /snap/bin/multipass transfer ~/.ssh/id_rsa.pub "{{ item.item }}:"
+    /snap/bin/multipass exec "{{ item.item }}" -- bash -c 'sudo cat /home/ubuntu/id_rsa.pub >> /home/ubuntu/.ssh/authorized_keys'
+  register: k3s_worker_configure
+  changed_when: "k3s_worker_configure.rc == 1"
+  with_items: "{{ k3s_worker_ip.results }}"

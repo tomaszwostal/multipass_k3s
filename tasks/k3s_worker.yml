@@ -1,0 +1,29 @@
+---
+- name: get node token
+  command: cat /var/lib/rancher/k3s/server/node-token
+  register: node_token_result
+  become: yes
+  changed_when: "node_token_result.rc == 1"
+  delegate_to: "{{ groups['k3s_masters'][0] }}"
+
+- name: set facts for k3s cluster
+  set_fact:
+    node_token: "{{ node_token_result.stdout }}"
+    master_ip: "{{ hostvars[groups['k3s_masters'][0]].ansible_default_ipv4.address }}"
+
+- name: install k3s on workers
+  shell: >
+    set -o pipefail
+    curl -sfL https://get.k3s.io |
+    K3S_URL=https://{{ master_ip }}:6443
+    K3S_TOKEN={{ node_token }}
+    sh -
+  args:
+    creates: /usr/local/bin/k3s
+    warn: no
+  register: workers_install_result
+  become: yes
+
+- name: results of installation
+  debug: var=workers_install_result.stdout_lines
+  when: workers_install_result is changed

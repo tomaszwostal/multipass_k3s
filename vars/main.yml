@@ -1,2 +1,30 @@
 ---
-# vars file for multipass_k3s
+k3s_main_name: "k3s-main"
+k3s_main_number: 1
+k3s_main_memory: 2048M
+k3s_main_cpu: 1
+k3s_main_disk: 25G
+
+k3s_worker_name: "k3s-worker"
+k3s_worker_number: 2
+k3s_worker_memory: 4096M
+k3s_worker_cpu: 2
+k3s_worker_disk: 25G
+
+k3s_kubeconfig_mode: 644
+install_k3s_exec: '--no-deploy servicelb --no-deploy traefik'
+
+apt_packages:
+- curl
+- git
+- wget
+- snapd
+
+yum_packages:
+- curl
+- git
+- wget
+
+snap_packages:
+- multipass
+- k9s
