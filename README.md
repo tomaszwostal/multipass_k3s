@@ -4,13 +4,16 @@
 An ansible role that installs k3s kubernetes distribution in multipass virtual machines.
 
 ## Requirements
+
 Debian based Linux distribution. Tested on Debian Bullseye.
 
 ## Role variables
+
 By default k3s is installed without load balancer. It can be changed by ```install_k3s_exec``` variable.
 
 
 Full list of variables:
+
 ```
 k3s_main_name: "k3s-main"
 k3s_main_number: 1
@@ -29,9 +32,11 @@ install_k3s_exec: '--no-deploy servicelb --no-deploy traefik'
 ```
 
 ## Dependencies
+
 None.
 
 ## Example playbook
+
 ```
 ---
 - hosts: supervisor
@@ -66,7 +71,12 @@ None.
         name: tomaszwostal.multipass_k3s
         tasks_from: k3s_worker
 ```
+## License
+
+MIT / BSD
+
 ## TODO
+
 - [ ] multi master setup
 - [ ] add teardown option
 - [ ] add template for /etc/hosts file
