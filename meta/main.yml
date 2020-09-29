@@ -1,0 +1,16 @@
+galaxy_info:
+  author: Tomasz Wostal
+  description: k3s in multipass virtual machines
+  company: ITomM IT Solutions
+  license: "license (BSD, MIT)"
+  min_ansible_version: 2.9
+  platforms:
+    - name: Debian
+      versions:
+        - buster
+        - bullseye
+    galaxy_tags:
+      - virtualization
+      - k3s
+      - multipass
+      - kubernetes
