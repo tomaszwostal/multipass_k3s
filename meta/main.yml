@@ -9,8 +9,8 @@ galaxy_info:
       versions:
         - buster
         - bullseye
-    galaxy_tags:
-      - virtualization
-      - k3s
-      - multipass
-      - kubernetes
+  galaxy_tags:
+    - virtualization
+    - k3s
+    - multipass
+    - kubernetes
