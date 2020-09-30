@@ -29,6 +29,8 @@ k3s_worker_disk: 25G
 
 k3s_kubeconfig_mode: 644
 install_k3s_exec: '--no-deploy servicelb --no-deploy traefik'
+
+k3s_kubeconfig_location: "/tmp"
 ```
 
 ## Dependencies
@@ -82,4 +84,4 @@ MIT / BSD
 - [ ] add template for /etc/hosts file
 - [ ] add support for Ubuntu hosts
 - [ ] add support for RedHat/CentOS/Fedora hosts
-- [ ] configure path for kubeconfig file
+- [x] configure path for kubeconfig file

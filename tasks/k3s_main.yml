@@ -20,14 +20,14 @@
 - name: fetch k3s.yaml
   fetch:
     src: /etc/rancher/k3s/k3s.yaml
-    dest: /tmp/k3s.yaml
+    dest: "{{ k3s_kubeconfig_location }}"
     flat: yes
   become: yes
   run_once: yes
 
 - name: update master ip in k3s.yaml
   replace:
-    path: /tmp/k3s.yaml
+    path: "{{ k3s_kubeconfig_location }}"
     regexp: '127\.0\.0\.1'
     replace: "{{ hostvars[groups['k3s_masters'][0]]['ansible_ens4']['ipv4']['address'] }}"
   run_once: yes

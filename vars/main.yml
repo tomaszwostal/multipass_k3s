@@ -14,6 +14,8 @@ k3s_worker_disk: 25G
 k3s_kubeconfig_mode: 644
 install_k3s_exec: '--no-deploy servicelb --no-deploy traefik'
 
+k3s_kubeconfig_location: "/tmp"
+
 apt_packages:
 - curl
 - git
