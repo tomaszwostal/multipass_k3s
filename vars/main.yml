@@ -29,4 +29,3 @@ yum_packages:
 
 snap_packages:
 - multipass
-- k9s
