@@ -1,9 +1,9 @@
 ---
-#- name: apt autoremove
-#  apt:
-#    autoremove: yes
-#  become: yes
-#  when: ansible_facts['os_family'] == "Debian"
+- name: apt autoremove
+  apt:
+    autoremove: yes
+  become: yes
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: update all apt packages
   apt:
